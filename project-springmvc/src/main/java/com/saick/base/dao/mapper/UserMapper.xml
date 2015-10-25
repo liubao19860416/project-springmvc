@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace表示当前的命名空间 -->
+<mapper namespace="com.saick.base.dao.mapper.UserMapper">
+
+	<!-- 根据用户账号查询单个用户信息 将定义select理解为一个sql，这个sql对应statement，这时可以将sql的id理解为statement的id -->
+	<select id="findUserById" parameterType="java.lang.Integer"
+		resultType="com.saick.base.dao.entiy.User">
+		<!-- 占位符的概念 -->
+		SELECT * FROM USER WHERE id=#{id}
+	</select>
+
+	<!-- 插入对象方法 -->
+	<insert databaseId="mysql" id="insertUser" parameterType="com.saick.base.dao.entiy.User">
+		<!-- 这里需要配置获取插入数据的id主键 -->
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO USER(username,sex,birthday,address,detail,score)
+		VALUES(#{username},#{sex},#{birthday},#{address},#{detail},#{score})
+	</insert>
+	
+	<!-- 这里需要配置获取插入数据的id主键 -->
+	<!-- 插入对象方法oracle -->
+	<!-- <insert databaseId="oracle" id="insertUser" parameterMap="com.saick.base.dao.entiy.User">
+		<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
+			SELECT EMP.currval AS ID FROM dual
+		</selectKey>
+		INSERT INTO EMP(ename,sal)
+		VALUES(#{ename},#{sal})
+	</insert> -->
+
+	<!-- 更新方法 -->
+	<update id="updateUserById" parameterType="com.saick.base.dao.entiy.User">
+		UPDATE USER SET
+		username=#{username},sex=#{sex},birthday=#{birthday},address=#{address},detail=#{detail},score=#{score}
+		WHERE ID=#{id}
+	</update>
+	<!-- 删除方法 -->
+	<delete id="deleteUserById" parameterType="java.lang.Integer">
+		DELETE FROM USER WHERE
+		id=#{id}
+	</delete>
+	<!-- 查找所有用户信息:输出pojo对象 -->
+	<select id="findAllUsers" resultType="com.saick.base.dao.entiy.User">
+		SELECT * FROM USER
+	</select>
+	<!-- 查找所有用户信息:输出hashmap -->
+	<select id="findAllUsersResultMap" resultType="hashmap">
+		SELECT * FROM USER
+	</select>
+
+	<!-- 模糊查询操作(查询姓名为李的人员的信息) -->
+	<!-- 使用具体String参数的话,只能使用${value},或者使用User对象实现${username} -->
+	<select id="findUsersByNameLike" parameterType="string"
+		resultType="com.saick.base.dao.entiy.User">
+		SELECT id,username,sex FROM USER WHERE username LIKE
+		'${value}%'
+	</select>
+
+	<!-- 使用具体String参数的话,只能使用${value},或者使用User对象实现${username} -->
+	<select id="findUsersByNameLike2" parameterType="com.saick.base.dao.entiy.User"
+		resultType="com.saick.base.dao.entiy.User">
+		SELECT id,username,sex FROM USER WHERE username LIKE
+		'${username}%'
+	</select>
+
+	<!-- 多数据库环境测试:查询当前日期时间 -->
+	<select databaseId="oracle" id="getDateNow" resultType="date">
+		select sysdate from dual
+	</select>
+	<select databaseId="mysql" id="getDateNow" resultType="date">
+		select now()
+	</select>
+	<select databaseId="mysql" id="getTimestampNow" resultType="java.sql.Timestamp">
+		select now()
+	</select>
+
+</mapper>

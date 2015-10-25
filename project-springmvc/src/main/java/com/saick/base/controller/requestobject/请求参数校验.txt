@@ -1,0 +1,109 @@
+方式1:不可取
+ * public Object commitOrder(
+            @RequestBody( required = true ) @Validated OrderCommitRequestObject reqObj,
+            @RequestHeader( required = true )  @Validated SaikeMobileHead saikeMobileHead,
+            BindingResult bindingResult,HttpServletRequest request ) {
+        
+        checkBindingResult( bindingResult );
+        
+        //方式2:试一下
+         * @RequestBody( required = true ) Map<String, Object> orderDetailParam,
+           @RequestHeader( required = true ) Map<String, Object> headMap,
+           Model model,
+           @Validated OrderCommitRequestObject reqObj,
+           @Validated SaikeMobileHead saikeMobileHead,
+            BindingResult bindingResult,
+            HttpServletRequest request ) {
+            
+        //方式3:试一下
+         public Object commitOrder( Model model, @Validated User user,
+         @Validated SaikeMobileHead saikeMobileHead,BindingResult bindingResult,
+         @RequestBody( required = true ) Map<String, Object> orderDetailParam,,
+         @RequestHeader( required = true )  Map<String, Object> headMap,
+         HttpServletRequest request) {
+         
+         //@Valid @ModelAttribute("user")Register user
+         
+         //判断位置
+        if (bindingResult.hasErrors()) {
+            return ErrorInfoUtil.setErrorInfo(
+                  ErrorCodeConsField.ERROR_MSG_10034,
+                  //配置文件中的错误代码key
+                  getMessage( "city.or.area.code.at.least.input.one") );
+        }
+        //或者
+         checkBindingResult( bindingResult );
+代码如下：
+	 protected ResultViewObject checkBindingResult( BindingResult bindingResult ) {
+        ResultViewObject resultViewObject = new ResultViewObject();
+        if( bindingResult.hasErrors() ) {
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            if( errors != null ) {
+                for( ObjectError objError : errors ) {
+                    resultViewObject.appendMessage( 
+                            getErrorFieldName( objError ),
+                            getErrorMessage( objError ) );
+                }
+            }
+            throw new ParameterInvalidException( resultViewObject );
+        }
+        return resultViewObject;
+    }
+
+
+	  @Pattern(regexp="^[a-zA-Z0-9_]+@[a-zA-Z0-9_]+.[a-zA-Z]{2,5}?((.cn)|(.jp))?$", message="邮箱格式不正确")
+
+	  //检查时间字符串time是否满足格式“HH:mm:ss”，若不满足显示相应消息，并返回false 
+String regex = "(([01]\\d)|(2[0-3])):[0-5]\\d(:[0-5]\\d)?";
+
+
+//判断YYYY-MM-DD这种格式的，基本上把闰年和2月等的情况都考虑进去了 
+"^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-))$" 
+
+
+JSR-303原生支持的限制有如下几种：
+限制
+说明
+@Null
+限制只能为null
+@NotNull
+限制必须不为null
+@AssertFalse	
+限制必须为false
+@AssertTrue
+限制必须为true
+@DecimalMax(value)
+限制必须为一个不大于指定值的数字
+@DecimalMin(value)
+限制必须为一个不小于指定值的数字
+@Digits(integer,fraction)
+限制必须为一个小数，且整数部分的位数不能超过integer，小数部分的位数不能超过fraction
+@Future
+限制必须是一个将来的日期
+@Max(value)
+限制必须为一个不大于指定值的数字
+@Min(value)
+限制必须为一个不小于指定值的数字
+@Past
+限制必须是一个过去的日期
+@Pattern(value)
+限制必须符合指定的正则表达式
+@Size(max,min)
+限制字符长度必须在min到max之间
+
+{
+    "source": "AppStore",
+    "payType": "1",
+    "pickVelAmt": "0",
+    "invTitle": "",
+    "invType": "2",
+    "retVelAddr": "",
+    "isUnSelect": "0",
+    "csrvProdListClassName": "CsrvProd",
+    "orderAmt": "226.21",
+    "dyType": "1",
+    "orderProjListClassName": "Project",
+    "pickVelAddr": "",
+    "maintDate": "2014-12-25",
+    "retVelAmt": "0",
+}

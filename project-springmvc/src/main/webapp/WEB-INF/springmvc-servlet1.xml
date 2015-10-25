@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.1.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.1.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.1.xsd ">
+
+	<!-- 启用注解 -->
+	<mvc:annotation-driven />
+	
+	<!-- 组件扫描，用于控制层 -->
+	<context:component-scan base-package="com.saick.base.controller.upload" />
+	
+	<!-- jsp视图解析器 1 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="-1"/>
+		<property name="viewClass">
+			<value>org.springframework.web.servlet.view.JstlView</value>
+		</property>
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+		<property name="contentType" value="text/html;charset=UTF8" />
+	</bean>
+
+	<!-- 方式一:通过name属性进行访问,但是name必须以action结尾,不需要其他设置即可;但是只能是1对1的使用 -->
+	<bean name="/helloWorld01.action" id="helloWorld01" class="com.saick.base.controller1.HelloWorld01"/>
+	<bean id="helloWorld02" class="com.saick.base.controller1.HelloWorld02" />
+	<bean id="myUpload" class="com.saick.base.controller1.HelloWorld02" />
+	
+	<!-- BeanName映射器1 -->
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+
+	<!-- 适配器1 -->
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+	<!-- 适配器2 -->
+	<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
+
+	<!-- 方式二:url简单映射器2 -->
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<!-- 有点是灵活,可以设置多个映射,对应的控制器controller的bean不需要有name,只需要id就行了 -->
+				<prop key="/helloWorld01.action">helloWorld01</prop>
+				<prop key="/helloWorld02.action">helloWorld02</prop>
+				<prop key="/myUpload/0.action">myUpload</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 简单的视图转发器(系统提供,可用于设置全局结果集视图),相当于是一个默认的name视图转发器 -->
+	<bean name="/success.action" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="success"/>
+	</bean>
+
+	<!-- 表单控制器 -->
+	<bean name="/myform.action" class="com.saick.base.controller1.MyFormController">
+		<!-- personForm为逻辑名 -->
+		<property name="formView" value="personView" />
+		<!-- success为逻辑名 -->
+		<property name="successView" value="success" />
+	</bean>
+
+	<!-- 声明一个向导表单控制器bean -->
+	<bean name="/mywizardform.action" class="com.saick.base.controller1.MyWizardController">
+		<property name="pages">
+			<list>
+				<value>/wizard/1</value>
+				<value>/wizard/2</value>
+				<value>/wizard/3</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 文件上传 -->  
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+        <property name="maxUploadSize" value="100000000" />  
+        <property name="defaultEncoding" value="UTF-8" />  
+		<property name="maxInMemorySize" value="40960" />
+    </bean>
+
+</beans>

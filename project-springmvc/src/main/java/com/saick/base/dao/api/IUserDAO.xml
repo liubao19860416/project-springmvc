@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace表示当前的命名空间 -->
+<mapper namespace="com.saick.base.dao.api.IUserDAO">
+	<!-- 开启二级缓存 -->
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+	<!-- 查询所有用户信息 -->
+	<select id="findList" resultType="com.saick.base.dao.entiy.User">
+		SELECT * FROM USER
+	</select>
+
+	<select id="findById" resultType="com.saick.base.dao.entiy.User"
+		parameterType="java.lang.Long">
+		SELECT * FROM USER WHERE id=#{id}
+	</select>
+
+	<!-- 添加新用户方法 -->
+	<insert id="save" parameterType="com.saick.base.dao.entiy.User">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO USER(username,password,nickname,email)
+		VALUES(#{username},#{password},#{nickname},#{email})
+	</insert>
+
+	<!-- 视图层springmvc层未实现 -->
+	<!-- 批量添加用户的操作1:这里的userMap是手动在map中设置的key;如果不设置,默认为map?hashmap? -->
+	<insert id="saveManyByMap" parameterType="hashmap">
+		<!-- 这里如何提前获取每个对象的主键呢? -->
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO USER(username,password,nickname,email) VALUES
+		<foreach collection="userMap" item="user" separator=",">
+			<if test="userMap!=null">
+				(#{user.username},#{user.password},#{user.nickname},#{user.email})
+			</if>
+		</foreach>
+	</insert>
+
+	<!-- 批量添加用户的操作2:list集合的默认名字是list,类型为arraylist 或者java.util.List -->
+	<!-- <insert id="saveManyByList" parameterType="arraylist" > -->
+	<insert id="saveManyByList" parameterType="java.util.List">
+		INSERT INTO USER(username,password,nickname,email) VALUES
+		<foreach collection="list" item="user" separator=",">
+			(#{user.username},#{user.password},#{user.nickname},#{user.email})
+		</foreach>
+	</insert>
+
+	<!-- 根据id数组,批量查询数据 -->
+	<!-- 抽离的sql更新代码块 -->
+	<sql id="update_set_if">
+		<if test="username!='' and username!=null">
+			username=#{username},
+		</if>
+		<if test="password!='' and password!=null">
+			password=#{password},
+		</if>
+		<if test="nickname!='' and nickname!=null">
+			nickname=#{nickname},
+		</if>
+		<if test="email!='' and email!=null">
+			email=#{email},
+		</if>
+		<!-- 置空的情况 -->
+		<if test="username=='' or username==null">
+			username='',
+		</if>
+		<!-- 密码不能被置空 -->
+		<if test="password=='' or password==null">
+		</if>
+		<if test="nickname=='' or nickname==null">
+			nickname='',
+		</if>
+		<if test="email=='' or email==null">
+			email='',
+		</if>
+	</sql>
+
+	<!-- 更新用户信息 -->
+	<update id="update" parameterType="com.saick.base.dao.entiy.User">
+		UPDATE USER
+		<!-- SET username=#{username},password=#{password},nickname=#{nickname},email=#{email} 
+			WHERE id=#{id} -->
+		<!-- set标签根据个数,自动添加set关键字 -->
+		<set>
+			<include refid="update_set_if" />
+		</set>
+		<!-- WHERE不存在,就是更新数据全部用户的信息;id存在则是更新指定用户的信息 -->
+		<if test="id!='' and id!=null">
+			WHERE id=#{id}
+		</if>
+	</update>
+
+	<!-- 删除用户方法 -->
+	<delete id="deleteById" parameterType="java.lang.Long">
+		DELETE FROM USER WHERE
+		id=#{id}
+	</delete>
+
+	<!-- 根据ids数组,批量删除用户方法 -->
+	<delete id="deleteByIds" parameterType="Object[]">
+		DELETE FROM USER
+		<where>
+			<if test="array!=null">
+				<foreach collection="array" item="id" open="id IN (" close=")"
+					separator=",">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</delete>
+
+	<!-- sql代码片段 -->
+	<!-- where中条件的第一个条件中的AND可以省略,其他的and不可以省略 -->
+	<sql id="userConditions">
+		<if test="id!='' and id!=null">
+			AND id=#{id}
+		</if>
+		<if test="username!='' and username!=null">
+			AND username like '%${username}%'
+		</if>
+		<if test="nickname!='' and nickname!=null">
+			AND nickname like '%${nickname}%'
+		</if>
+		<if test="email!='' and email!=null">
+			AND email like '%${email}%'
+		</if>
+	</sql>
+
+	<!-- 模糊查询操作 -->
+	<!-- 使用具体String参数的话,只能使用${value},或者使用User对象实现${username} -->
+	<select id="findByConditions" parameterType="com.saick.base.dao.entiy.User"
+		resultType="com.saick.base.dao.entiy.User">
+		SELECT * FROM USER
+		<where>
+			<!-- where中条件中的第一个AND可以省略,其他的and不可以省略 -->
+			<include refid="userConditions" />
+		</where>
+	</select>
+
+	<!-- 使用具体String参数的话,只能使用'${value}%',或者使用User对象实现${username} -->
+	<!-- 根据名字,模糊查询 -->
+	<select id="findByNameLike" parameterType="com.saick.base.dao.entiy.User"
+		resultType="com.saick.base.dao.entiy.User">
+		SELECT * FROM USER WHERE username LIKE '${username}%'
+	</select>
+
+	<!-- 多数据库环境测试:查询当前日期时间 -->
+	<select databaseId="oracle" id="getDateNow" resultType="date">
+		select sysdate from dual
+	</select>
+	<select databaseId="mysql" id="getDateNow" resultType="date">
+		select now()
+	</select>
+	<select databaseId="mysql" id="getTimestampNow" resultType="java.sql.Timestamp">
+		select now()
+	</select>
+
+</mapper>

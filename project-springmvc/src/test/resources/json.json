@@ -1,0 +1,74 @@
+{
+    "vkt": "6000",                                   
+    "userId": 1042037,                               
+    "dealerCode": "269",                              
+    "maintVelmodelId": 1,                            
+    "dyType": "1",    //备用
+    "maintDate": "2014-06-12 00:00:00",   //备用                                
+    "startDate": "2014-06-12",              
+    "timeArea": "09:00-09:30",
+    "retVelAddr": "上海市徐汇区",    //备用                  
+    "pickVelAddr": "上海市徐汇区",   //备用                  
+    "orderUName": "张三",                            
+    "orderUTel": "15245786932",                      
+    "invType": "1",            //备用                        
+    "invTitle": "上汽集团",     //备用                       
+    "userRemark": "",                         
+    "payType": "1",           //备用                         
+    "retVelAmt": "100.00",    //备用                         
+    "pickVelAmt": "200.00",   //备用                         
+    "maintAmt": "789.00",                            
+    "orderAmt": "800.00",     //备用                      
+    "laborhourDs": "0.9",                            
+    "partsDs": "0.9",   //备用     
+    "dsId":8,      //备用
+    "mdseTypeId":1,   //备用
+    "dealerProductCode":"1", 
+    "vlp":"京A457889",  
+    "isUnSelect":"1",   //备用               
+    "orderProjList": [                               
+        {
+            "subProjId": 1,  //备用
+            "projId": 1,
+            "isOptionalParts": "1",  //备用
+            "projName": "换机油",                    
+            "projAmt": "400.00",            
+            "laborhour": "3",                        
+            "laborhourGuideprice": "65.50",          
+            "cpUrl": "http://www.baidu.com",         
+            "recoTypeId":"1",  //备用
+            "partsTotalPrice":"180.00"，                       
+            "orderPartsList": [                      
+                {
+                    "partsCode": "502",                    
+                    "partsName": "嘉实多4L",         
+                    "partsGuideprice": "320.00",     
+                    "partsDosage": "1",
+                    "cpUrl": "www.baidu.com"               
+                }
+            ]
+        },
+        {
+            "subProjId": 1,  //备用
+            "projId": 1,
+            "isOptionalParts": "0",  //备用
+            "projName": "换机滤",
+            "projAmt": "400.00",   
+            "laborhour": "3",
+            "laborhourGuideprice": "65.50",
+            "cpUrl": "http://www.baidu.com",         
+            "recoTypeId":"1",  //备用
+              "partsTotalPrice":"180.00"，
+              "orderPartsList": [
+                {
+                    "partsCode": "503",
+                    "partsName": "极品机滤",
+                    "partsGuideprice": "90.00",
+                    "partsDosage": "1",
+                    "cpUrl": "www.baidu.com"
+                }
+            ]
+        }
+    ]
+}
+
